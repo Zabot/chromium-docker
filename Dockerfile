@@ -1,16 +1,12 @@
-FROM ubuntu:16.04
+FROM thebiggerguy/docker-pulseaudio-example
 
-# Install chromium
-RUN apt-get update \
-    && apt-get install chromium-browser alsa-base \
-       -y --no-install-recommends \
-    && rm -rf /var/lib/apt/lists/*
+USER root
+RUN apt-get update && apt-get install chromium-browser curl -y
+RUN adduser $UNAME video
+USER $UNAME
 
-# Create a normal user to run chromium as
-RUN useradd --create-home browser \
-    && adduser browser video \
-    && adduser browser audio
+COPY docker-entrypoint.sh docker-entrypoint.sh
+ENTRYPOINT ["./docker-entrypoint.sh"]
 
-USER browser
-ENTRYPOINT ["/usr/bin/chromium-browser"]
+CMD ["https://test.webrtc.org"]
 
